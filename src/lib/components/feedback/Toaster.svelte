@@ -76,6 +76,18 @@
 						<p class="text-xs opacity-70">{item.hint}</p>
 					{/if}
 				</div>
+				{#if item.action}
+					<button
+						type="button"
+						class="btn btn-sm"
+						onclick={() => {
+							item.action?.onclick();
+							toast.dismiss(item.id);
+						}}
+					>
+						{item.action.label}
+					</button>
+				{/if}
 				{#if dismissible}
 					<button
 						type="button"

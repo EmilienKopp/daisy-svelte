@@ -14,8 +14,8 @@
 	interface Props {
 		actions?: DropdownAction[];
 		trigger?: Snippet;
-		/** Custom dropdown content, rendered after `actions`. */
-		children?: Snippet;
+		/** Custom dropdown content, rendered after `actions`. Receives a `close` callback. */
+		children?: Snippet<[{ close: () => void }]>;
 		position?: 'bottom' | 'top' | 'left' | 'right';
 		align?: 'start' | 'center' | 'end';
 		class?: string;
@@ -32,11 +32,30 @@
 
 	let details: HTMLDetailsElement | undefined = $state();
 
-	function handleAction(action: DropdownAction, e: MouseEvent) {
-		action.onclick?.(e);
+	export function close() {
 		if (details) details.open = false;
 	}
+
+	function handleAction(action: DropdownAction, e: MouseEvent) {
+		action.onclick?.(e);
+		close();
+	}
+
+	// Native <details> stays open on outside click / Escape; close it ourselves.
+	function handleWindowClick(e: MouseEvent) {
+		if (details?.open && e.target instanceof Node && !details.contains(e.target)) {
+			close();
+		}
+	}
+
+	function handleWindowKeydown(e: KeyboardEvent) {
+		if (e.key === 'Escape' && details?.open) {
+			close();
+		}
+	}
 </script>
+
+<svelte:window onclick={handleWindowClick} onkeydown={handleWindowKeydown} />
 
 <details
 	bind:this={details}
@@ -70,6 +89,6 @@
 				{/if}
 			</li>
 		{/each}
-		{@render children?.()}
+		{@render children?.({ close })}
 	</ul>
 </details>

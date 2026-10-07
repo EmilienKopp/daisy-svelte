@@ -7,6 +7,8 @@ export interface ToastOptions {
 	hint?: string;
 	/** Extra classes applied to the alert element. */
 	class?: string;
+	/** Optional action button rendered after the message. */
+	action?: { label: string; onclick: () => void };
 }
 
 export interface ToastItem {
@@ -16,6 +18,7 @@ export interface ToastItem {
 	duration: number;
 	hint?: string;
 	class?: string;
+	action?: { label: string; onclick: () => void };
 }
 
 const DEFAULT_DURATION = 4000;
@@ -30,7 +33,15 @@ class ToastStore {
 		const id = ++this.#nextId;
 		const duration = options.duration ?? DEFAULT_DURATION;
 
-		this.items.push({ id, message, variant, duration, hint: options.hint, class: options.class });
+		this.items.push({
+			id,
+			message,
+			variant,
+			duration,
+			hint: options.hint,
+			class: options.class,
+			action: options.action
+		});
 
 		if (duration > 0) {
 			this.#timers.set(

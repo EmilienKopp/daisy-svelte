@@ -6,6 +6,7 @@
 	interface Props {
 		variant?:
 			| 'default'
+			| 'base'
 			| 'primary'
 			| 'secondary'
 			| 'accent'
